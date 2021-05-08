@@ -17,10 +17,7 @@
 void init_IO();
 void flash();
 
-float input(int switch_led, float counter);
-
-float input_A(float counter_A);
-float input_B(float counter_B);
+float input(char bv, float counter);
 void display_A(float counter_A);
 void display_B(float counter_B);
 // void display_output_G(float counter_A);
@@ -52,17 +49,14 @@ int main()
 	float Display_Led_One = 0;
 	float Display_Led_Two = 0;
 	
-	int switch_LED1 = PING & _BV(PG0); 			// Assign PG0 to pushbutton 1
-	int switch_LED2 = PING & _BV(PG1); 			// Assign PG1 to pushbutton 2
-
+	char bv1 = _BV(PG0);
+	char bv2 = _BV(PG1);
+	
 	while(1)
 	{
-		// Display_Led_One = input_A(Display_Led_One);
-		
-		// Display_Led_Two = input_B(Display_Led_Two);
 
-		Display_Led_One = input(switch_LED1, Display_Led_One);
-		Display_Led_Two = input(switch_LED2, Display_Led_Two);
+		Display_Led_One = input(bv1, Display_Led_One);
+		Display_Led_Two = input(bv2, Display_Led_Two);
 
 		display_A(Display_Led_One);
 		
@@ -183,9 +177,11 @@ void flash()
 	return counter_A;
 }*/
 
-float input(int switch_led, float counter)
+float input(char bv, float counter)
 {
 	_delay_ms(3*DELAY/15);					// some delay
+
+	int switch_LED = PING & bv;
 
 	float result = counter;
 
@@ -197,24 +193,6 @@ float input(int switch_led, float counter)
 			result++;				// decrement
 	}
 	return result;
-}
-
-float input_B(float counter_B)
-{
-	int switch_LED2 = OFF;
-
-	switch_LED2 = PING & _BV(PG1); 			// Assign PG1 to pushbutton 2
-
-	_delay_ms(3*DELAY/15);					// some delay
-
-	if (switch_LED2 == ON)           			// bit value is 0
-	{
-		if (counter_B == 9)				// counter at min value
-		counter_B = 0;				// change counter value to three
-		else
-		counter_B++;				// decrement
-	}
-	return counter_B;
 }
 
 void display_A(float counter_A)
@@ -279,22 +257,3 @@ void display_B(float counter_B)
 		_delay_ms(DELAY);					// display for 3 seconds
 	}
 }
-/*
-void display_output_G(float counter_A)
-{
-	if (counter_A == 0)
-	PORTG |= (_BV(3) | _BV(4));			// bit values 1 - Both Red LEDs off
-	else if (counter_A == 1)
-	{
-		PORTG |= _BV(3);				// bit value 1 - Red LED off
-		PORTG &= ~_BV(4);				// bit value 0 - Red LED on
-	}
-	else if (counter_A == 2)
-	{
-		PORTG &= ~_BV(3);				// bit value 0 - Red LED on
-		PORTG |= _BV(4);				// bit value 1 - Red LED off
-	}
-	else
-	PORTG &= ~(_BV(3) | _BV(4));			// bit value 0 - Both Red LEDs on
-}
-*/

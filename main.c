@@ -167,9 +167,9 @@ float input_A(float counter_A)
 	if (switch_LED1 == ON)           			// bit value is 0
 	{
 		if (counter_A == 9)				// counter at max value
-		counter_A = 0;				// change counter value to zero
+			counter_A = 0;				// change counter value to zero
 		else
-		counter_A++;				// increment
+			counter_A++;				// increment
 	}
 	return counter_A;
 }
@@ -200,25 +200,26 @@ void display_A(float counter_A)
 	if (increment_LED1 == ON)
 	{
 		if (counter_A == 0)
-		PORTA = F0;				// display '0'
+			PORTA = F0;				// display '0'
 		else if (counter_A == 1)
-		PORTA = F1;				// display '1'
+			PORTA = F1;				// display '1'
 		else if (counter_A == 2)
-		PORTA = F2;				// display '2'
+			PORTA = F2;				// display '2'
 		else if (counter_A == 3)
-		PORTA = F3;				// display '3'
+			PORTA = F3;				// display '3'
 		else if (counter_A == 4)
-		PORTA = F4;				// display '4'
+			PORTA = F4;				// display '4'
 		else if (counter_A == 5)
-		PORTA = F5;				// display '5'
+			PORTA = F5;				// display '5'
 		else if (counter_A == 6)
-		PORTA = F6;				// display '6'
+			PORTA = F6;				// display '6'
 		else if (counter_A == 7)
-		PORTA = F7;				// display '7'
+			PORTA = F7;				// display '7'
 		else if (counter_A == 8)
-		PORTA = F8;				// display '8'
+			PORTA = F8;				// display '8'
 		else if (counter_A == 9)
-		PORTA = F9;				// display '9'
+			PORTA = F9;				// display '9'
+		
 		_delay_ms(DELAY);					// display for 3 seconds
 	}
 }

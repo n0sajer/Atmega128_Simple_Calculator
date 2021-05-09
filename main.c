@@ -16,6 +16,9 @@
 
 void init_IO();
 void flash();
+
+float input(int switch_led, float counter);
+
 float input_A(float counter_A);
 float input_B(float counter_B);
 void display_A(float counter_A);
@@ -49,12 +52,18 @@ int main()
 	float Display_Led_One = 0;
 	float Display_Led_Two = 0;
 	
+	int switch_LED1 = PING & _BV(PG0); 			// Assign PG0 to pushbutton 1
+	int switch_LED2 = PING & _BV(PG1); 			// Assign PG1 to pushbutton 2
+
 	while(1)
 	{
-		Display_Led_One = input_A(Display_Led_One);
+		// Display_Led_One = input_A(Display_Led_One);
 		
-		Display_Led_Two = input_B(Display_Led_Two);
-		
+		// Display_Led_Two = input_B(Display_Led_Two);
+
+		Display_Led_One = input(switch_LED1, Display_Led_One);
+		Display_Led_Two = input(switch_LED2, Display_Led_Two);
+
 		display_A(Display_Led_One);
 		
 		display_B(Display_Led_Two);
@@ -156,7 +165,7 @@ void flash()
 	}
 }
 
-float input_A(float counter_A)
+/*float input_A(float counter_A)
 {
 	int switch_LED1 = OFF;					// initialise bit value to 1
 
@@ -172,6 +181,22 @@ float input_A(float counter_A)
 			counter_A++;				// increment
 	}
 	return counter_A;
+}*/
+
+float input(int switch_led, float counter)
+{
+	_delay_ms(3*DELAY/15);					// some delay
+
+	float result = counter;
+
+	if (switch_LED == ON)           			// bit value is 0
+	{
+		if (result == 9)				// counter at min value
+			result = 0;				// change counter value to three
+		else
+			result++;				// decrement
+	}
+	return result;
 }
 
 float input_B(float counter_B)

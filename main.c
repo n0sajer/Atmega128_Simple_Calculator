@@ -20,7 +20,7 @@ void flash();
 float input(char bv, float counter);
 void display_A(float counter_A);
 void display_B(float counter_B);
-// void display_output_G(float counter_A);
+void display_G(float counter_C);
 
 // Define LED Display
 // BS-C536RI - Common Cathode
@@ -36,7 +36,9 @@ void display_B(float counter_B);
 #define F8 0x7F		// Eight
 #define F9 0x7E		// Nine
 
-
+#define _BV(bit) (1 &lt;&lt; bit)
+#define setbit(port, bit) (port) |= (1 &lt;&lt; (bit))
+#define clearbit(port, bit) (port) &amp;= ~(1 &lt;&lt; (bit))
 #define DELAY 500		// ms
 #define ON 0
 #define OFF 1
@@ -255,5 +257,32 @@ void display_B(float counter_B)
 		else if (counter_B == 9)
 		PORTD = F9;				// display '9'
 		_delay_ms(DELAY);					// display for 3 seconds
+	}
+}
+
+void display_G(float counter_C)
+{
+	switch(counter_C) {
+		case 0:
+			clearbit(PORTG, PG3);
+			clearbit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
+		case 1:
+			setbit(PORTG, PG4);
+			clearbit(PORTG, PG3);
+			_delay_ms(DELAY);
+			break;
+		case 2:
+			setbit(PORTG, PG3);
+			clearbit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
+		case 3:
+			setbit(PORTG, PG3);
+			setbit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
+	
 	}
 }

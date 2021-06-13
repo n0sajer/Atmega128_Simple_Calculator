@@ -50,19 +50,24 @@ int main()
 		
 	float Display_Led_One = 0;
 	float Display_Led_Two = 0;
+	int Display_Port_G = 0;
 	
 	char bv1 = _BV(PG0);
 	char bv2 = _BV(PG1);
-	
+	char bv3 = _BV(PG2);
+
 	while(1)
 	{
 
 		Display_Led_One = input(bv1, Display_Led_One);
 		Display_Led_Two = input(bv2, Display_Led_Two);
+		Display_Port_G = input2(bv3, Display_Port_G);
 
 		display_A(Display_Led_One);
 		
 		display_B(Display_Led_Two);
+
+		display_G(Display_Port_G);
 		
 		//display_output_G(counter_A);	
 	}
@@ -190,6 +195,24 @@ float input(char bv, float counter)
 	if (switch_LED == ON)           			// bit value is 0
 	{
 		if (result == 9)				// counter at min value
+			result = 0;				// change counter value to three
+		else
+			result++;				// decrement
+	}
+	return result;
+}
+
+int input2(char bv, int counter)
+{
+	_delay_ms(3*DELAY/15);					// some delay
+
+	int switch_operand = PING & bv;
+
+	int result = counter;
+
+	if (switch_operand == ON)           			// bit value is 0
+	{
+		if (result == 3)				// counter at min value
 			result = 0;				// change counter value to three
 		else
 			result++;				// decrement

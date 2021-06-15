@@ -16,11 +16,12 @@
 
 void init_IO();
 void flash();
-float input_A(float counter_A);
-float input_B(float counter_B);
-void display_A(float counter_A);
-void display_B(float counter_B);
-// void display_output_G(float counter_A);
+
+int input(char bv, float counter);
+int input2(char bv, int counter);
+void display_A(int counter_A);
+void display_B(int counter_B);
+void display_G(int counter_C);
 
 // Define LED Display
 // BS-C536RI - Common Cathode
@@ -36,30 +37,54 @@ void display_B(float counter_B);
 #define F8 0x7F		// Eight
 #define F9 0x7E		// Nine
 
+#define _BV(n) (1 << n)
+/*
+#define _BV(bit) (1 &lt;&lt; bit)
+#define setbit(port, bit) (port) |= (1 &lt;&lt; (bit))
+#define clearbit(port, bit) (port) &amp;= ~(1 &lt;&lt; (bit))
+#define PORT_(port) PORT ## port
+#define DDR_(port)  DDR  ## port
+#define PIN_(port)  PIN  ## port
+#define PORT(port) PORT_(port)
+#define DDR(port)  DDR_(port)
+#define PIN(port)  PIN_(port)
+#define CLEAR(port,pin) PORT ## PORT &= ~(1<<pin)
+#define SET(port,pin) PORT ## PORT |= (1<<pin)
+*/
 
-#define DELAY 500		// ms
+#define SetBit(port,pin) (port|=(_BV(pin)))
+#define ClrBit(port,pin) (port&=~(_BV(pin)))
+#define DELAY 100		// ms
 #define ON 0
 #define OFF 1
 
-int main()
+int main() 
 {
+	
     init_IO();
 	flash();
 		
-	float Display_Led_One = 0;
-	float Display_Led_Two = 0;
+	int Display_Led_One = 0;
+	int Display_Led_Two = 0;
+	int Display_Port_G = 0;
 	
+	char bv1 = _BV(PG0);
+	char bv2 = _BV(PG1);
+	char bv3 = _BV(PG2);
+
 	while(1)
 	{
-		Display_Led_One = input_A(Display_Led_One);
-		
-		Display_Led_Two = input_B(Display_Led_Two);
-		
+
+		Display_Led_One = input(bv1, Display_Led_One);
+		Display_Led_Two = input(bv2, Display_Led_Two);
+		Display_Port_G = input2(bv3, Display_Port_G);
+
 		display_A(Display_Led_One);
 		
 		display_B(Display_Led_Two);
+
+		display_G(Display_Port_G);
 		
-		//display_output_G(counter_A);	
 	}
 	
 	
@@ -76,7 +101,6 @@ void init_IO()
 	DDRG = 0x18;			// PORT G - (PG4, PG3), input (PG2,PG1,PG0)
 	PORTG = 0x07;			// PORT G - Pull ups on PG1, PG2, PG3
 	
-	/* PORTG |= (_BV(3) | _BV(4)); */
 }
 
 void flash()
@@ -156,43 +180,43 @@ void flash()
 	}
 }
 
-float input_A(float counter_A)
+int input(char bv, int counter)
 {
-	int switch_LED1 = OFF;					// initialise bit value to 1
-
-	switch_LED1 = PING & _BV(PG0); 			// Assign PG0 to pushbutton 1
-
 	_delay_ms(3*DELAY/15);					// some delay
 
-	if (switch_LED1 == ON)           			// bit value is 0
+	int switch_LED = PING & bv;
+
+	int result = counter;
+
+	if (switch_LED == ON)           			// bit value is 0
 	{
-		if (counter_A == 9)				// counter at max value
-			counter_A = 0;				// change counter value to zero
+		if (result == 9)				// counter at min value
+			result = 0;				// change counter value to three
 		else
-			counter_A++;				// increment
+			result++;				// decrement
 	}
-	return counter_A;
+	return result;
 }
 
-float input_B(float counter_B)
+int input2(char bv, int counter)
 {
-	int switch_LED2 = OFF;
+	_delay_ms(3*DELAY);					// some delay
 
-	switch_LED2 = PING & _BV(PG1); 			// Assign PG1 to pushbutton 2
+	int switch_operand = PING & bv;
 
-	_delay_ms(3*DELAY/15);					// some delay
+	int result = counter;
 
-	if (switch_LED2 == ON)           			// bit value is 0
+	if (switch_operand == ON)           			// bit value is 0
 	{
-		if (counter_B == 9)				// counter at min value
-		counter_B = 0;				// change counter value to three
+		if (result == 3)				// counter at min value
+			result = 0;				// change counter value to three
 		else
-		counter_B++;				// decrement
+			result++;				// decrement
 	}
-	return counter_B;
+	return result;
 }
 
-void display_A(float counter_A)
+void display_A(int counter_A)
 {
 	int increment_LED1 = OFF;
 	increment_LED1 = PING & _BV(PG0);
@@ -224,7 +248,7 @@ void display_A(float counter_A)
 	}
 }
 
-void display_B(float counter_B)
+void display_B(int counter_B)
 {
 	int increment_LED2 = OFF;
 	increment_LED2 = PING & _BV(PG1);
@@ -254,22 +278,29 @@ void display_B(float counter_B)
 		_delay_ms(DELAY);					// display for 3 seconds
 	}
 }
-/*
-void display_output_G(float counter_A)
+
+void display_G(int counter_C)
 {
-	if (counter_A == 0)
-	PORTG |= (_BV(3) | _BV(4));			// bit values 1 - Both Red LEDs off
-	else if (counter_A == 1)
-	{
-		PORTG |= _BV(3);				// bit value 1 - Red LED off
-		PORTG &= ~_BV(4);				// bit value 0 - Red LED on
+	switch(counter_C) {
+		case 0:
+			ClrBit(PORTG, PG3);
+			ClrBit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
+		case 1:
+			SetBit(PORTG, PG4);
+			ClrBit(PORTG, PG3);
+			_delay_ms(DELAY);
+			break;
+		case 2:
+			SetBit(PORTG, PG3);
+			ClrBit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
+		case 3:
+			SetBit(PORTG, PG3);
+			SetBit(PORTG, PG4);
+			_delay_ms(DELAY);
+			break;
 	}
-	else if (counter_A == 2)
-	{
-		PORTG &= ~_BV(3);				// bit value 0 - Red LED on
-		PORTG |= _BV(4);				// bit value 1 - Red LED off
-	}
-	else
-	PORTG &= ~(_BV(3) | _BV(4));			// bit value 0 - Both Red LEDs on
 }
-*/

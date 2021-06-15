@@ -56,7 +56,7 @@ void display_G(int counter_C);
 #define ClrBit(port,pin) (port&=~(_BV(pin)))
 #define TglBit(port,pin) (port^=(_BV(pin)))
 #define BitIsSet(port,pin) (port&_BV(pin))
-#define BitIsClr(port,pin) (!BitIsSet(port,pin))
+#define BitIsClr(port,pin) (!BitIsSet(port,pin))x
 
 #define DELAY 100		// ms
 #define ON 0
